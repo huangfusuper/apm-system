@@ -54,6 +54,8 @@
         <artifactId>maven-jar-plugin</artifactId>
         <version>3.2.0</version>
         <configuration>
+          <!--指定打包路径-->
+          <outputDirectory>D:\javaAgent</outputDirectory>
           <archive>
             <manifestEntries>
               <Project-name>${project.name}</Project-name>

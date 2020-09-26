@@ -1,10 +1,7 @@
 package com.apm;
 
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.CtMethod;
+import javassist.*;
 
-import java.lang.instrument.ClassDefinition;
 import java.lang.instrument.Instrumentation;
 
 /**
@@ -15,20 +12,40 @@ import java.lang.instrument.Instrumentation;
  */
 public class JavassistEntranceFilter {
     public static void premain(String args, Instrumentation instrumentation) throws Exception {
-        System.out.println("拦截器生效" + args);
-        /**
-         * javaagent 总结
-         * 1.instrumentation addTransformer 类装载拦截
-         * 2.只能拦截未装载过的类
-         * 3.instrumentation#retransformClasses方法 重新装载类 ，必须开启相关参数
-         * 4.instrumentation.redefineClasses 重新定义一个类 ，不能添加新方法 ，必须开启相关参数
-         *
-         */
-        ClassPool pool = new ClassPool();
-        pool.appendSystemPath();
-        CtClass ctClass = pool.get("com.apm.UserService");
-        CtMethod sayHello = ctClass.getDeclaredMethod("sayHello");
-        sayHello.insertAfter("System.out.println(\"皇甫科星  拦截器添加的---\");");
-        instrumentation.redefineClasses(new ClassDefinition(Class.forName("com.apm.UserService"), ctClass.toBytecode()));
+        //添加一个类拦截器
+        //ASM class组成原理 使用要求高
+        //Javassist java编码
+        instrumentation.addTransformer((loader, className, classBeingRedefined, protectionDomain, classfileBuffer) -> {
+            //创建一个类池  只有存在这个类池的类才能被修改
+            ClassPool classPool = new ClassPool();
+            //将当前系统的classLoader当中的类增加到类池里面   通过classLoader 可以找到使用当前加载器加载的全部的类
+            //ByteArrayClassPath  把一个字节加入到类池
+            //ClassClassPath  把一个Class加入到类池
+            //DirClassPath 把目录下的所有的Class加入到类池
+            //JarClassPath 把一个jar包里的class加入到类池
+            //JarDirClassPath 把一个目录下的jar的class加入到类池
+            //LoaderClassPath 把一个加载器加载的类加载到类池
+            //URLClassPath 把一个url加载到类池
+            classPool.appendSystemPath();
+            //获取对应的类
+            try {
+                String bodyTemp = "{\n\t%s\n\t%s\n\t%s\n\t%s\n}";
+                CtClass ctClass = classPool.get("com.apm.UserService");
+                CtMethod sayHello = ctClass.getDeclaredMethod("sayHello");
+                CtMethod copyMethod = CtNewMethod.copy(sayHello, ctClass, null);
+                sayHello.setName(sayHello.getName() + "$javaagent");
+                copyMethod.setBody(String.format(bodyTemp, "long startTime = System.currentTimeMillis();",
+                        sayHello.getName() + "();", "long end = System.currentTimeMillis();",
+                        "System.out.println(end - startTime);"));
+
+                //把修改后的类重新装载进JVM
+                ctClass.addMethod(copyMethod);
+                ctClass.toClass();
+            } catch (NotFoundException | CannotCompileException e) {
+                e.printStackTrace();
+            }
+            return new byte[0];
+        });
+
     }
 }
