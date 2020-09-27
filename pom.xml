@@ -18,6 +18,7 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <junit-version>4.12</junit-version>
     <javassist-version>3.27.0-GA</javassist-version>
+    <commons-lang3-version>3.11</commons-lang3-version>
   </properties>
 
   <dependencies>
@@ -33,6 +34,14 @@
       <groupId>org.javassist</groupId>
       <artifactId>javassist</artifactId>
       <version>${javassist-version}</version>
+    </dependency>
+
+
+    <!-- 字符工具类 -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>${commons-lang3-version}</version>
     </dependency>
 
   </dependencies>
@@ -68,6 +77,33 @@
           </archive>
           <skip>true</skip>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <artifactSet>
+                <includes>
+                  <include>org.javassist:javassist</include>
+                  <include>org.apache.commons:commons-lang3</include>
+                </includes>
+              </artifactSet>
+              <transformers>
+                <transformer
+                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>com.apm.JavassistEntranceFilter</mainClass>
+                </transformer>
+              </transformers>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
