@@ -52,13 +52,13 @@ public class HttpServletRequestAdapter {
         this.target = target;
         try {
             Class<?> targetClass = target.getClass().getClassLoader().loadClass(TARGET_CLASSNAME);
-            getRequestUri$JavaAgent = targetClass.getMethod("getRequestURI");
-            getParameterMap$JavaAgent = targetClass.getMethod("getParameterMap");
-            getMethod$JavaAgent = targetClass.getMethod("getMethod");
-            getHeader$JavaAgent = targetClass.getMethod("getHeader", String.class);
-            getRemoteAddr$JavaAgent = targetClass.getMethod("getRemoteAddr");
-            getRequestUrl$JavaAgent = targetClass.getMethod("getRequestURL");
-            getHeaderNames$JavaAgent = targetClass.getMethod("getHeaderNames");
+            getRequestUri$JavaAgent = targetClass.getDeclaredMethod("getRequestURI");
+            getParameterMap$JavaAgent = targetClass.getDeclaredMethod("getParameterMap");
+            getMethod$JavaAgent = targetClass.getDeclaredMethod("getMethod");
+            getHeader$JavaAgent = targetClass.getDeclaredMethod("getHeader", String.class);
+            getRemoteAddr$JavaAgent = targetClass.getDeclaredMethod("getRemoteAddr");
+            getRequestUrl$JavaAgent = targetClass.getDeclaredMethod("getRequestURL");
+            getHeaderNames$JavaAgent = targetClass.getDeclaredMethod("getHeaderNames");
         } catch (Exception e) {
             throw ApmException.wrap(e);
         }
@@ -141,6 +141,7 @@ public class HttpServletRequestAdapter {
 
     /**
      * 获取请求头的值
+     *
      * @param name handler的key
      * @return 对应的值
      */
