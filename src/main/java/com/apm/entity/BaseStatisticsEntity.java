@@ -28,6 +28,11 @@ public class BaseStatisticsEntity {
      */
     private String errorMsg;
 
+    /**
+     * 统计类型   service/http
+     */
+    private String modelType;
+
     public long getStartTime() {
         return startTime;
     }
@@ -66,5 +71,13 @@ public class BaseStatisticsEntity {
 
     public void setErrorMsg(String errorMsg) {
         this.errorMsg = errorMsg;
+    }
+
+    public String getModelType() {
+        return modelType;
+    }
+
+    public void setModelType(String modelType) {
+        this.modelType = modelType;
     }
 }

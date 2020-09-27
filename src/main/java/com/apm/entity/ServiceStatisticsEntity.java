@@ -1,12 +1,14 @@
 package com.apm.entity;
 
+import java.util.Arrays;
+
 /**
  * 服务方法的信息载体
  *
  * @author huangfu
  * @date 2020/9/26 22:21
  */
-public class ServiceStatisticsEntity {
+public class ServiceStatisticsEntity extends BaseStatisticsEntity {
     /**
      * 类全限定名
      */
@@ -30,7 +32,7 @@ public class ServiceStatisticsEntity {
     /**
      * 返回值
      */
-    private String returnValue;
+    private Object returnValue;
 
     public String getClassName() {
         return className;
@@ -72,11 +74,23 @@ public class ServiceStatisticsEntity {
         this.returnType = returnType;
     }
 
-    public String getReturnValue() {
+    public Object getReturnValue() {
         return returnValue;
     }
 
-    public void setReturnValue(String returnValue) {
+    public void setReturnValue(Object returnValue) {
         this.returnValue = returnValue;
+    }
+
+    @Override
+    public String toString() {
+        return "ServiceStatisticsEntity{" +
+                "className='" + className + '\'' +
+                ", simpleClassName='" + simpleClassName + '\'' +
+                ", methodName='" + methodName + '\'' +
+                ", args=" + Arrays.toString(args) +
+                ", returnType='" + returnType + '\'' +
+                ", returnValue=" + returnValue +
+                '}' + String.format("%s\n%s\n",getStartTime(),getUseTime());
     }
 }
