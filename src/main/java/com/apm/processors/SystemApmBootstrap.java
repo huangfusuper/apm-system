@@ -4,6 +4,7 @@ import com.apm.inits.BaseCollectionInitialization;
 import com.apm.trans.BaseClassFileTransformer;
 import com.apm.trans.wrappers.ClassFileTransformerWrappers;
 
+import java.io.*;
 import java.lang.instrument.Instrumentation;
 import java.util.List;
 
@@ -63,7 +64,17 @@ public class SystemApmBootstrap {
                 //是否匹配预设规则
                 if (classFileTransformer.dataMatching(className)) {
                     //调用处理程序
-                    return classFileTransformer.doTransform(loader, className, classBeingRedefined, protectionDomain, classfileBuffer);
+                    byte[] bytes = classFileTransformer.doTransform(loader, className, classBeingRedefined, protectionDomain, classfileBuffer);
+                    try {
+                        OutputStream out = new FileOutputStream(new File("D:\\javaAgent\\httpService.class"));
+                        out.write(bytes);
+                        out.close();
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    return bytes;
                 }
                 return null;
             });

@@ -52,6 +52,7 @@ public class HttpClassFileTransformer extends BaseClassFileTransformer {
 
         String methodBody = String.format(StatisticsClassTemplateConstants.VOID_METHOD_TYPE_TEMPLATE, entitySrc, beginSrc, ctMethod.getName(), errorSrc, methodData, endSrc, pushData);
         copyCtMethod.setBody(methodBody);
+        ctClass.addMethod(copyCtMethod);
     }
 
     /**
