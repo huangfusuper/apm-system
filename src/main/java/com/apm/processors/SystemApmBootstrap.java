@@ -3,6 +3,7 @@ package com.apm.processors;
 import com.apm.inits.BaseCollectionInitialization;
 import com.apm.trans.BaseClassFileTransformer;
 import com.apm.trans.wrappers.ClassFileTransformerWrappers;
+import com.apm.utils.JavaAgentPropertiesUtil;
 
 import java.lang.instrument.Instrumentation;
 import java.util.List;
@@ -53,9 +54,13 @@ public class SystemApmBootstrap {
      * @return 启动引导
      */
     public SystemApmBootstrap starter() {
+        //解析指定配置文件
+        JavaAgentPropertiesUtil.parseProperties(args);
+        //获取当前所有的代码格式化器
         List<ClassFileTransformerWrappers> classFileTransformerWrapperList = this.baseCollectionInitialization.getClassFileTransformerWrapperList();
         classFileTransformerWrapperList.forEach(classFileTransformerWrappers -> {
             BaseClassFileTransformer classFileTransformer = classFileTransformerWrappers.getClassFileTransformer();
+            //添加类修改器
             this.instrumentation.addTransformer((loader, className, classBeingRedefined, protectionDomain, classfileBuffer) -> {
                 className = className.replaceAll("/",".");
                 //是否匹配预设规则
