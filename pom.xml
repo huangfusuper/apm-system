@@ -19,6 +19,7 @@
     <junit-version>4.12</junit-version>
     <javassist-version>3.27.0-GA</javassist-version>
     <commons-lang3-version>3.11</commons-lang3-version>
+    <javax.servlet-api-version>3.1.0</javax.servlet-api-version>
   </properties>
 
   <dependencies>
@@ -42,6 +43,14 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
       <version>${commons-lang3-version}</version>
+    </dependency>
+
+    <!--servlet api-->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>${javax.servlet-api-version}</version>
+      <scope>provided</scope>
     </dependency>
 
   </dependencies>

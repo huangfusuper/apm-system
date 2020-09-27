@@ -2,11 +2,11 @@ package com.apm.trans;
 
 import com.apm.constants.StatisticsClassTemplateConstants;
 import com.apm.entity.ServiceStatisticsEntity;
-import com.apm.exceptions.ApmException;
-import javassist.*;
-
-import java.lang.instrument.IllegalClassFormatException;
-import java.security.ProtectionDomain;
+import com.apm.utils.JavaAgentPropertiesKey;
+import com.apm.utils.JavaAgentPropertiesUtil;
+import javassist.CtClass;
+import javassist.CtMethod;
+import javassist.CtNewMethod;
 
 /**
  * 业务类转换器
@@ -17,50 +17,14 @@ public class ServiceClassFileTransformer extends BaseClassFileTransformer {
 
     public static final String VOID_TYPE_NAME = "void";
 
-    @Override
-    public byte[] doTransform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
-        try {
-            return buildCtClass(loader, className).toBytecode();
-        } catch (Exception e) {
-            throw ApmException.wrap(e);
-        }
-    }
-
-    public CtClass buildCtClass(ClassLoader loader, String className) throws NotFoundException, CannotCompileException {
-        //定义类池
-        ClassPool pool = new ClassPool();
-        //加载当前项目内的所由类路径
-        pool.insertClassPath(new LoaderClassPath(loader));
-        //获取类的操作对象
-        CtClass ctClass = pool.get(className);
-        //获取方法级操作对象
-        CtMethod[] declaredMethods = ctClass.getDeclaredMethods();
-        for (CtMethod declaredMethod : declaredMethods) {
-            //屏蔽非公共方法
-            if (!Modifier.isPublic(declaredMethod.getModifiers())) {
-                continue;
-            }
-            //屏蔽静态方法
-            if (Modifier.isStatic(declaredMethod.getModifiers())) {
-                continue;
-            }
-            //屏蔽本地方法
-            if (Modifier.isNative(declaredMethod.getModifiers())) {
-                continue;
-            }
-            //修改原始方法
-            buildMethod(ctClass, declaredMethod);
-        }
-        return ctClass;
-    }
-
     /**
      * 构建统计方法对象
      *
      * @param ctClass  类对象
      * @param ctMethod 方法对象
      */
-    public void buildMethod(CtClass ctClass, CtMethod ctMethod) throws CannotCompileException, NotFoundException {
+    @Override
+    public void buildMethod(CtClass ctClass, CtMethod ctMethod) throws Exception {
         CtClass returnType = ctMethod.getReturnType();
         //拷贝一个方法 此方法为原始方法，修改他的类名，然后由新增方法调用该方法
         CtMethod copyCtMethod = CtNewMethod.copy(ctMethod, ctClass, null);
@@ -109,7 +73,7 @@ public class ServiceClassFileTransformer extends BaseClassFileTransformer {
 
     @Override
     public boolean dataMatching(String verifyTheData) {
-        boolean equals = "com.apm.UserService".equals(verifyTheData);
-        return equals;
+        //boolean equals = "com.apm.UserService".equals(verifyTheData);
+        return verifyTheData.contains(JavaAgentPropertiesUtil.getConfig(JavaAgentPropertiesKey.FILTER_SERVICE_PACKAGE));
     }
 }
