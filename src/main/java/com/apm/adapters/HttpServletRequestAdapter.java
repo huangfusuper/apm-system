@@ -26,10 +26,7 @@ public class HttpServletRequestAdapter {
      * 获取请求的rul方法
      */
     private final Method getRequestUrl$JavaAgent;
-    /**
-     * 获取参数url
-     */
-    private final Method getParameterMap$JavaAgent;
+
     /**
      * 获取请求方法的url
      */
@@ -40,9 +37,10 @@ public class HttpServletRequestAdapter {
     private final Method getHeader$JavaAgent;
     private final Method getHeaderNames$JavaAgent;
     /**
-     * 获取调用者ip
+     * 获取servletPath
      */
-    private final Method getRemoteAddr$JavaAgent;
+    private final Method getContextPath$JavaAgent;
+
     /**
      * 获取目标类名
      */
@@ -53,12 +51,11 @@ public class HttpServletRequestAdapter {
         try {
             Class<?> targetClass = target.getClass().getClassLoader().loadClass(TARGET_CLASSNAME);
             getRequestUri$JavaAgent = targetClass.getDeclaredMethod("getRequestURI");
-            getParameterMap$JavaAgent = targetClass.getDeclaredMethod("getParameterMap");
             getMethod$JavaAgent = targetClass.getDeclaredMethod("getMethod");
             getHeader$JavaAgent = targetClass.getDeclaredMethod("getHeader", String.class);
-            getRemoteAddr$JavaAgent = targetClass.getDeclaredMethod("getRemoteAddr");
             getRequestUrl$JavaAgent = targetClass.getDeclaredMethod("getRequestURL");
             getHeaderNames$JavaAgent = targetClass.getDeclaredMethod("getHeaderNames");
+            getContextPath$JavaAgent = targetClass.getDeclaredMethod("getContextPath");
         } catch (Exception e) {
             throw ApmException.wrap(e);
         }
@@ -91,13 +88,13 @@ public class HttpServletRequestAdapter {
     }
 
     /**
-     * 获取请求参数
+     * 获取contextPath
      *
-     * @return 返回请求参数
+     * @return 返回看路径信息
      */
-    public Map<String, String[]> getParameterMap() {
+    public String getContextPath() {
         try {
-            return (Map<String, String[]>) getParameterMap$JavaAgent.invoke(target);
+            return getContextPath$JavaAgent.invoke(target).toString();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -151,33 +148,5 @@ public class HttpServletRequestAdapter {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-
-    /**
-     * 返回请求的ip
-     *
-     * @return 请求的ip
-     */
-    public String getRemoteAddr() {
-        try {
-            return (String) getRemoteAddr$JavaAgent.invoke(target);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public String getClientIp() {
-        String ip = getHeader("x-forwarded-for");
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = getHeader("Proxy-Client-IP");
-        }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = getHeader("WL-Proxy-Client-IP");
-        }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = getRemoteAddr();
-        }
-        return ip;
     }
 }

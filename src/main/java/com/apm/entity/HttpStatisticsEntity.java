@@ -18,10 +18,6 @@ public class HttpStatisticsEntity extends BaseStatisticsEntity {
      */
     private String url;
     /**
-     * 请求参数
-     */
-    private Map<String, String[]> paramMap;
-    /**
      * 访问方式
      */
     private String method;
@@ -32,7 +28,7 @@ public class HttpStatisticsEntity extends BaseStatisticsEntity {
     /**
      * 请求路径
      */
-    private String remoteAddr;
+    private String contextPath;
 
     public String getUri() {
         return uri;
@@ -50,13 +46,6 @@ public class HttpStatisticsEntity extends BaseStatisticsEntity {
         this.url = url;
     }
 
-    public Map<String, String[]> getParamMap() {
-        return paramMap;
-    }
-
-    public void setParamMap(Map<String, String[]> paramMap) {
-        this.paramMap = paramMap;
-    }
 
     public String getMethod() {
         return method;
@@ -74,11 +63,22 @@ public class HttpStatisticsEntity extends BaseStatisticsEntity {
         this.handlerMap = handlerMap;
     }
 
-    public String getRemoteAddr() {
-        return remoteAddr;
+    public String getContextPath() {
+        return contextPath;
     }
 
-    public void setRemoteAddr(String remoteAddr) {
-        this.remoteAddr = remoteAddr;
+    public void setContextPath(String contextPath) {
+        this.contextPath = contextPath;
+    }
+
+    @Override
+    public String toString() {
+        return "HttpStatisticsEntity{" +
+                "uri='" + uri + '\'' +
+                ", url='" + url + '\'' +
+                ", method='" + method + '\'' +
+                ", handlerMap=" + handlerMap +
+                ", contextPath='" + contextPath + '\'' +
+                '}' + String.format("%s-------%s", getUseTime(), getModelType());
     }
 }

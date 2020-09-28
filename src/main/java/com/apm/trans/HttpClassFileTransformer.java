@@ -66,8 +66,7 @@ public class HttpClassFileTransformer extends BaseClassFileTransformer {
         HttpServletRequestAdapter httpServletRequestAdapter = new HttpServletRequestAdapter(httpRequest);
         httpStatisticsEntity.setMethod(httpServletRequestAdapter.getMethod());
         httpStatisticsEntity.setHandlerMap(httpServletRequestAdapter.getHeaderMap());
-        httpStatisticsEntity.setParamMap(httpServletRequestAdapter.getParameterMap());
-        httpStatisticsEntity.setRemoteAddr(httpServletRequestAdapter.getRemoteAddr());
+        httpStatisticsEntity.setContextPath(httpServletRequestAdapter.getContextPath());
         httpStatisticsEntity.setUri(httpServletRequestAdapter.getRequestUri());
         httpStatisticsEntity.setUrl(httpServletRequestAdapter.getRequestUrl());
     }
