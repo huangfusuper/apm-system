@@ -54,6 +54,7 @@ public class SystemApmBootstrap {
         //获取当前所有的代码格式化器
         List<ClassFileTransformerWrappers> classFileTransformerWrapperList = this.baseCollectionInitialization.getClassFileTransformerWrapperList();
         classFileTransformerWrapperList.forEach(classFileTransformerWrappers -> {
+            //从调用链获取类修改器包装类
             BaseClassFileTransformer classFileTransformer = classFileTransformerWrappers.getClassFileTransformer();
             //添加类修改器
             this.instrumentation.addTransformer((loader, className, classBeingRedefined, protectionDomain, classfileBuffer) -> {

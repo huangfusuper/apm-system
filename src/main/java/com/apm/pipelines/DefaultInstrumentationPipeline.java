@@ -26,7 +26,11 @@ public class DefaultInstrumentationPipeline implements InstrumentationPipeline {
         this.baseCollectionInitialization = baseCollectionInitialization;
     }
 
-
+    /**
+     * 向类转换器链条末尾追加一个转换器
+     * @param baseClassFileTransformer 拦截器实现
+     * @return 返回
+     */
     @Override
     public InstrumentationPipeline addLast(BaseClassFileTransformer baseClassFileTransformer) {
         addLast(null, baseClassFileTransformer);
@@ -43,10 +47,12 @@ public class DefaultInstrumentationPipeline implements InstrumentationPipeline {
     @Override
     public InstrumentationPipeline addLast(String classFileTransformerName, BaseClassFileTransformer baseClassFileTransformer) {
         if (StringUtils.isBlank(classFileTransformerName)) {
+            //构建一个类文件转换的名称
             classFileTransformerName = getClassFileTransformerSimpleName(baseClassFileTransformer);
         }
         //包装类格式化器
         ClassFileTransformerWrappers classFileTransformerWrappers = new ClassFileTransformerWrappers(classFileTransformerName, baseClassFileTransformer);
+        //向链条上追加一个类转换器包装器
         this.baseCollectionInitialization.addCallChain(classFileTransformerWrappers);
         return this;
     }

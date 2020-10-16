@@ -73,7 +73,7 @@ public class ServiceClassFileTransformer extends BaseClassFileTransformer {
 
     @Override
     public boolean dataMatching(String verifyTheData) {
-        //boolean equals = "com.apm.UserService".equals(verifyTheData);
-        return verifyTheData.contains(JavaAgentPropertiesUtil.getConfig(JavaAgentPropertiesKey.FILTER_SERVICE_PACKAGE));
+        String basePathStr = JavaAgentPropertiesUtil.getConfig(JavaAgentPropertiesKey.FILTER_SERVICE_PACKAGE);
+        return verifyTheData.contains(basePathStr);
     }
 }
